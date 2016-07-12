@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+
+<!-- create by system gera-java version 1.0.0 07/05/2016 18:18 : 9-->
+
+<!DOCTYPE mapper
+   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ServicoMap">
+	<cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>
+	<cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
+
+  <!-- Result maps describe the mapping between the columns returned
+      from a query, and the class properties.  A result map isnt
+      necessary if the columns (or aliases) match to the properties
+       exactly. -->
+<resultMap id="ServicoResult" type="Servico">
+    <result property="id" column="id"/>
+    <result property="nome" column="nome"/>
+    <result property="descricao" column="descricao"/>
+    <result property="parentId" column="parentId"/>
+	<result property="createUser" column="create_user"/>
+	<result property="createDateUTC" column="create_date"/>
+	<result property="modifyUser" column="modify_user"/>
+	<result property="modifyDateUTC" column="modify_date"/>
+	<collection property="preco" column="id" select="PrecoMap.fetchPrecoByServico"/>
+</resultMap>
+
+  <sql id="allServicoColumns">
+nome
+,descricao
+,parentId
+,create_date
+,create_user
+,modify_date
+,modify_user
+
+</sql>
+<sql id="allServicoValues">
+	#{nome},
+	#{descricao},
+	#{parentId},
+	#{createDateUTC},
+	#{createUser},
+	#{modifyDateUTC},
+	#{modifyUser}
+  </sql>
+
+ <select id="fetchAllServicos" resultMap="ServicoResult">
+    SELECT id,
+	<include refid="allServicoColumns" />
+   FROM servico ORDER BY id ASC
+ </select>
+
+ <select id="fetchServicoById" parameterType="Integer" resultMap="ServicoResult">
+    SELECT id,
+	<include refid="allServicoColumns" />
+   FROM servico WHERE id = #{fetchid}
+ </select>
+
+ <select id="fetchServicoBySite" parameterType="Integer" resultMap="ServicoResult">
+    SELECT id,
+	<include refid="allServicoColumns" />
+   FROM servico WHERE parentId = #{fetchid}
+ </select>
+
+ <select id="fetchPrecoByPlano" parameterType="Integer" resultMap="ServicoResult">
+    SELECT id,
+	<include refid="allServicoColumns" />
+		FROM servico WHERE parentId = #{fetchid}
+ </select>
+
+ <select id="fetchAllServicosRequest" parameterType="ServicoInquiryRequest" resultMap="ServicoResult">
+
+		SELECT id,<include refid="allServicoColumns" />
+  		  FROM servico ORDER BY id ASC
+		  OFFSET ( #{startPage} * #{pageSize} )
+		  LIMIT #{pageSize}
+</select>
+
+<select id="fetchServicoRowCount" resultType="Integer">
+		SELECT COUNT(*) AS RECORD_COUNT FROM servico WHERE id IS NOT NULL
+
+ </select>
+
+ <insert id="insertServico" parameterType="Servico">
+ 	INSERT INTO servico (
+	<if test="id != null">id,</if><include refid="allServicoColumns" />
+     )
+   VALUES (<if test="id != null">#{id},</if><include refid="allServicoValues" /> )
+ </insert>
+
+ <update id="updateServico" parameterType="Servico">
+   UPDATE servico SET
+<if test="nome!= null">nome = #{nome},</if>
+<if test="descricao!= null">descricao = #{descricao},</if>
+<if test="modifyDateUTC!= null"> modify_date=#{modifyDateUTC},</if>
+<if test="modifyUser!= null"> modify_user=#{modifyUser}</if>
+   WHERE
+    id = #{id}
+ </update>
+
+<delete id="deleteServicoById" parameterType="Servico">
+  DELETE FROM servico WHERE id = #{id}
+ </delete>
+
+ <delete id="deleteAllServicos">
+	DELETE FROM servico
+  </delete>
+</mapper>
+
+

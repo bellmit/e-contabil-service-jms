@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+
+<!-- create by system gera-java version 1.0.0 07/05/2016 17:55 : 31-->
+
+<!DOCTYPE mapper
+   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="SiteMap">
+	<cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>
+	<cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
+
+  <!-- Result maps describe the mapping between the columns returned
+      from a query, and the class properties.  A result map isnt
+      necessary if the columns (or aliases) match to the properties
+       exactly. -->
+  <resultMap id="SiteResult" type="Site">
+    <result property="id" column="id"/>
+    <result property="nome" column="nome"/>
+    <result property="url" column="url"/>
+    <result property="quemSomos" column="quemSomos"/>
+    <result property="missao" column="missao"/>
+    <result property="visao" column="visao"/>
+    <result property="titulo" column="titulo"/>
+    <result property="logo" column="logo"/>
+    <result property="atorization" column="atorization"/>
+    <result property="siteTypeEnumValue" column="siteTypeEnum"/>
+	<result property="createUser" column="create_user"/>
+	<result property="createDateUTC" column="create_date"/>
+	<result property="modifyUser" column="modify_user"/>
+	<result property="modifyDateUTC" column="modify_date"/>
+	<collection property="servicoList" column="id" select="ServicoMap.fetchServicoBySite"/>
+	<collection property="planoList" column="id" select="PlanoByServicoMap.fetchPlanoByServicoById"/>
+	<collection property="empresa" column="empresa" select="StatusMap.fetchAllStatusByEmpresa"/>
+	<collection property="statusList" column="id" select="StatusMap.fetchAllStatusByEmpresa"/>
+</resultMap>
+
+  <sql id="allSiteColumns">
+nome
+,url
+,quemSomos
+,missao
+,visao
+,titulo
+,logo
+,siteTypeEnum
+,atorization
+,empresa
+,create_date
+,create_user
+,modify_date
+,modify_user
+
+</sql>
+<sql id="allSiteValues">
+#{nome},
+#{url},
+#{quemSomos},
+#{missao},
+#{visao},
+#{titulo},
+#{logo},
+#{siteTypeEnumValue},
+#{atorization},
+#{empresa.id},
+		#{createDateUTC},
+		#{createUser},
+		#{modifyDateUTC},
+		#{modifyUser}
+  </sql>
+
+
+ <select id="fetchAllSites" resultMap="SiteResult">
+    SELECT id,
+	<include refid="allSiteColumns" />
+   FROM site ORDER BY id ASC
+ </select>
+
+ <select id="fetchSiteById" parameterType="Integer" resultMap="SiteResult">
+    SELECT id,
+	<include refid="allSiteColumns" />
+   FROM site WHERE id = #{fetchid}
+ </select>
+
+ <select id="fetchAllSitesRequest" parameterType="SiteInquiryRequest" resultMap="SiteResult">
+
+		SELECT id,<include refid="allSiteColumns" />
+  		  FROM site where 0=0<if test="criteria.url != null"> and url = criteria.url</if> ORDER BY id ASC
+
+</select>
+
+<select id="fetchSiteRowCount" resultType="Integer">
+		SELECT COUNT(*) AS RECORD_COUNT FROM site WHERE id IS NOT NULL
+
+ </select>
+
+ <insert id="insertSite" parameterType="Site">
+ 	INSERT INTO site (
+	<if test="id != null">id,</if><include refid="allSiteColumns" />
+     )
+   VALUES (<if test="id != null">#{id},</if><include refid="allSiteValues" /> )
+ </insert>
+
+ <update id="updateSite" parameterType="Site">
+   UPDATE site SET
+<if test="nome!= null">nome = #{nome},</if>
+<if test="url!= null">url = #{url},</if>
+<if test="quemSomos!= null">quemSomos = #{quemSomos},</if>
+<if test="missao!= null">missao = #{missao},</if>
+<if test="visao!= null">visao = #{visao},</if>
+<if test="titulo!= null">titulo = #{titulo},</if>
+<if test="logo!= null">logo = #{logo},</if>
+<if test="siteTypeEnumValue!= null">siteTypeEnum = #{siteTypeEnumValue},</if>
+<if test="empresa.id!= null">empresa = #{empresa.id},</if>
+<if test="atorization!= null">atorization = #{atorization},</if>
+<if test="modifyDateUTC!= null"> modify_date=#{modifyDateUTC},</if>
+<if test="modifyUser!= null"> modify_user=#{modifyUser}</if>
+   WHERE
+    id = #{id}
+ </update>
+
+<delete id="deleteSiteById" parameterType="Site">
+  DELETE FROM site WHERE id = #{id}
+ </delete>
+
+ <delete id="deleteAllSites">
+	DELETE FROM site
+  </delete>
+</mapper>
+
+

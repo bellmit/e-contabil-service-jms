@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+
+<!-- create by system gera-java version 1.0.0 03/05/2016 14:9 : 7-->
+
+<!DOCTYPE mapper
+   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="FuncionarioMap">
+	<cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>
+	<cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
+
+  <!-- Result maps describe the mapping between the columns returned
+      from a query, and the class properties.  A result map isnt
+      necessary if the columns (or aliases) match to the properties
+       exactly. -->
+<resultMap id="funcionarioResult" type="Funcionario" extends="PessoaMap.PessoaResult">
+  </resultMap>
+
+<sql id="allFuncionarioColumns">
+	<include refid="PessoaMap.allPessoaColumns"/>
+</sql>
+<sql id="allFuncionarioValues">
+	<include refid="PessoaMap.allPessoaValues"/>
+</sql>
+
+ <select id="fetchAllFuncionarios" resultMap="funcionarioResult">
+    SELECT
+	<include refid="allFuncionarioColumns" />
+   FROM pessoa where pessoaTypeEnum = 8 ORDER BY id ASC
+ </select>
+
+ <select id="fetchFuncionarioById" parameterType="Integer" resultMap="funcionarioResult">
+    SELECT
+	<include refid="allFuncionarioColumns" />
+   FROM pessoa WHERE id = #{fetchid}
+ </select>
+
+ <select id="fetchAllFuncionariosRequest" parameterType="FuncionarioInquiryRequest" resultMap="funcionarioResult">
+
+		SELECT <include refid="allFuncionarioColumns" />
+  		  FROM pessoa where pessoaTypeEnum = 8 ORDER BY id ASC
+		  OFFSET ( #{startPage} * #{pageSize} )
+		  LIMIT #{pageSize}
+</select>
+
+<select id="fetchFuncionarioRowCount" resultType="Integer">
+		SELECT COUNT(*) AS RECORD_COUNT FROM pessoa WHERE id IS NOT NULL and pessoaTypeEnum = 8
+
+ </select>
+</mapper>
+
+

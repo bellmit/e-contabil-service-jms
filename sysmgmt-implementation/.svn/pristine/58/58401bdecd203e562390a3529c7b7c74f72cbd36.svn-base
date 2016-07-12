@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+
+<!-- create by system gera-java version 1.0.0 03/05/2016 14:9 : 7-->
+
+<!DOCTYPE mapper
+   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="TransportadorMap">
+	<cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>
+	<cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
+
+  <!-- Result maps describe the mapping between the columns returned
+      from a query, and the class properties.  A result map isnt
+      necessary if the columns (or aliases) match to the properties
+       exactly. -->
+<resultMap id="transportadorResult" type="Transportador" extends="PessoaMap.PessoaResult">
+  </resultMap>
+
+<sql id="allTransportadorColumns">
+	<include refid="PessoaMap.allPessoaColumns"/>
+</sql>
+<sql id="allTransportadorValues">
+	<include refid="PessoaMap.allPessoaValues"/>
+</sql>
+
+ <select id="fetchAllTransportadors" resultMap="transportadorResult">
+    SELECT
+	<include refid="allTransportadorColumns" />
+   FROM pessoa where pessoaTypeEnum = 8 ORDER BY id ASC
+ </select>
+
+ <select id="fetchTransportadorById" parameterType="Integer" resultMap="transportadorResult">
+    SELECT
+	<include refid="allTransportadorColumns" />
+   FROM pessoa WHERE id = #{fetchid}
+ </select>
+
+ <select id="fetchAllTransportadorsRequest" parameterType="TransportadorInquiryRequest" resultMap="transportadorResult">
+
+		SELECT <include refid="allTransportadorColumns" />
+  		  FROM pessoa where pessoaTypeEnum = 8 ORDER BY id ASC
+		  OFFSET ( #{startPage} * #{pageSize} )
+		  LIMIT #{pageSize}
+</select>
+
+<select id="fetchTransportadorRowCount" resultType="Integer">
+		SELECT COUNT(*) AS RECORD_COUNT FROM pessoa WHERE id IS NOT NULL and pessoaTypeEnum = 8
+
+ </select>
+</mapper>
+
+

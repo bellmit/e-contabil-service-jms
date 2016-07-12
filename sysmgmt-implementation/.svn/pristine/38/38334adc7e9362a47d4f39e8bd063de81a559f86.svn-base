@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+
+<!-- create by system gera-java version 1.0.0 01/05/2016 18:1 : 13-->
+
+<!DOCTYPE mapper
+   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="EntidadeMap">
+	<cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>
+	<cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
+
+  <!-- Result maps describe the mapping between the columns returned
+      from a query, and the class properties.  A result map isnt
+      necessary if the columns (or aliases) match to the properties
+       exactly. -->
+  <resultMap id="EntidadeResult" type="Empresa">
+    <result property="id" column="id"/>
+    <result property="nome" column="nome"/>
+    <result property="processId" column="processId"/>
+    <result property="entidadeId" column="entidadeId"/>
+    <result property="emprId" column="emprId"/>
+    <result property="entidadeEnumValue" column="entidadeEnumValue"/>
+	<result property="createUser" column="create_user"/>
+	<result property="createDateUTC" column="create_date"/>
+	<result property="modifyUser" column="modify_user"/>
+	<result property="modifyDateUTC" column="modify_date"/>
+	<collection property="regime" column="regime" select="RegimeMap.fetchRegimeById"/>
+	<collection property="enderecos" column="id" select="EnderecoMap.fetchEnderecoByTableById"/>
+  	<collection property="documentos" column="id" select="DocumentoMap.fetchDocumentoByEmpresa"/>
+	<collection property="emails" column="id" select="EmailMap.fetchAllEmailsByEmpresa"/>
+ 	<collection property="telefones" column="id" select="TelefoneMap.fetchTelefoneByEmpresa"/>
+	<collection property="cnaes" column="id" select="CnaeEmpresaMap.fetchAllCnaesByEmpresa"/>
+	<collection property="statusList" column="id" select="StatusMap.fetchAllStatusByEmpresa"/>
+	<collection property="notes" column="id" select="NoteMap.fetchNoteByNotes"/>
+  </resultMap>
+
+  <sql id="allEntidadeColumns">
+id
+,nome
+,processId
+,entidadeId
+,emprId
+,entidadeEnumValue
+,regime
+,create_date
+,create_user
+,modify_date
+,modify_user
+
+</sql>
+<sql id="allEntidadeValues">
+#{id},
+#{nome},
+#{processId},
+#{entidadeId},
+#{emprId},
+#{entidadeEnumValue},
+#{regime.id},
+		#{createDateUTC},
+		#{createUser},
+		#{modifyDateUTC},
+		#{modifyUser}
+  </sql>
+
+ <sql id="allEntidadeColumnsWithQualifier">
+		c.id, c.entidade_desc
+c.id,
+c.nome,
+c.processId,
+c.entidadeId,
+c.emprId,
+c.entidadeEnumValue,
+c.regime,
+		c.createDateUTC,
+		c.createUser,
+		c.modifyDateUTC,
+		c.modifyUser
+ </sql>
+
+ <insert id="insertEntidade" parameterType="Empresa">
+ 	INSERT INTO entidade (
+	<include refid="allEntidadeColumns" />
+     )
+   VALUES (<include refid="allEntidadeValues" /> )
+ </insert>
+
+ <update id="updateEntidade" parameterType="Empresa">
+   UPDATE entidade SET
+<if test="nome!= null">nome = #{nome},</if>
+<if test="processId!= null">processId = #{processId},</if>
+<if test="entidadeId!= null">entidadeId = #{entidadeId},</if>
+<if test="emprId!= null">emprId = #{emprId},</if>
+<if test="regime != null">regime = #{regime.id},</if>
+<if test="modifyDateUTC!= null"> modify_date=#{modifyDateUTC},</if>
+<if test="modifyUser!= null"> modify_user=#{modifyUser}</if>
+   WHERE
+    id = #{id}
+ </update>
+
+<delete id="deleteEntidadeById" parameterType="Empresa">
+  DELETE FROM entidade WHERE id = #{id}
+ </delete>
+
+ <delete id="deleteAllEntidades">
+	DELETE FROM entidade
+  </delete>
+</mapper>
+
+

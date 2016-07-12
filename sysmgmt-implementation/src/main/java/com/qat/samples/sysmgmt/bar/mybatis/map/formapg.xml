@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+
+<!-- create by system gera-java version 1.0.0 15/05/2016 18:59 : 2-->
+
+<!DOCTYPE mapper
+   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="FormaPgMap">
+	<cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>
+	<cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
+
+  <!-- Result maps describe the mapping between the columns returned
+      from a query, and the class properties.  A result map isnt
+      necessary if the columns (or aliases) match to the properties
+       exactly. -->
+  <resultMap id="FormaPgResult" type="FormaPg">
+    <result property="id" column="id"/>
+    <result property="descricao" column="descricao"/>
+    <result property="diasPg" column="diasPg"/>
+    <result property="entrada" column="entrada"/>
+<result property="emprId" column="emprId"/>
+<result property="processId" column="processId"/>
+<result property="createUser" column="create_user"/>
+<result property="createDateUTC" column="create_date"/>
+<result property="modifyUser" column="modify_user"/>
+<result property="modifyDateUTC" column="modify_date"/>
+  </resultMap>
+
+  <sql id="allFormaPgColumns">
+descricao
+,diasPg
+,entrada
+,emprId
+,processId
+,create_date
+,create_user
+,modify_date
+,modify_user
+
+</sql>
+<sql id="allFormaPgValues">
+#{descricao},
+#{diasPg},
+#{entrada},
+		#{emprId},
+		#{processId},
+		#{createDateUTC},
+		#{createUser},
+		#{modifyDateUTC},
+		#{modifyUser}
+  </sql>
+
+
+ <select id="fetchAllFormaPgs" resultMap="FormaPgResult">
+    SELECT id,
+	<include refid="allFormaPgColumns" />
+   FROM formapg ORDER BY id ASC
+ </select>
+
+ <select id="fetchFormaPgById" parameterType="Integer" resultMap="FormaPgResult">
+    SELECT id,
+	<include refid="allFormaPgColumns" />
+   FROM formapg WHERE id = #{fetchid}
+ </select>
+
+ <select id="fetchAllFormaPgsRequest" parameterType="FormaPgInquiryRequest" resultMap="FormaPgResult">
+
+		SELECT id,<include refid="allFormaPgColumns" />
+  		  FROM formapg where 0 = 0 <if test="criteria.emprId != null"> and emprId = criteria.emprId</if> ORDER BY id ASC
+		  OFFSET ( #{startPage} * #{pageSize} )
+		  LIMIT #{pageSize}
+</select>
+
+<select id="fetchFormaPgRowCount" resultType="Integer">
+		SELECT COUNT(*) AS RECORD_COUNT FROM formapg WHERE id IS NOT NULL <if test="criteria.emprId != null"> and emprId = criteria.emprId</if>
+
+ </select>
+
+ <insert id="insertFormaPg" parameterType="FormaPg" useGeneratedKeys="true" keyProperty="id">
+ 	INSERT INTO formapg (
+	<if test="id != null"><if test="id > 0">id,</if></if><include refid="allFormaPgColumns" />
+     )
+   VALUES (<if test="id != null"><if test="id > 0">#{id},</if></if><include refid="allFormaPgValues" /> )
+ </insert>
+
+ <update id="updateFormaPg" parameterType="FormaPg">
+   UPDATE formapg SET
+<if test="descricao!= null">descricao = #{descricao},</if>
+<if test="diasPg!= null">diasPg = #{diasPg},</if>
+<if test="entrada!= null">entrada = #{entrada},</if>
+<if test="modifyDateUTC!= null"> modify_date=#{modifyDateUTC},</if>
+<if test="modifyUser!= null"> modify_user=#{modifyUser}</if>
+   WHERE
+    id = #{id}
+ </update>
+
+<delete id="deleteFormaPgById" parameterType="FormaPg">
+  DELETE FROM formapg WHERE id = #{id}
+ </delete>
+
+ <delete id="deleteAllFormaPgs">
+	DELETE FROM formapg
+  </delete>
+</mapper>
+
+

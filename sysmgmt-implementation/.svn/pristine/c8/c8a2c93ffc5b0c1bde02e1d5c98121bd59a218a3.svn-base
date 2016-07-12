@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+
+<!-- create by system gera-java version 1.0.0 14/05/2016 21:53 : 25-->
+
+<!DOCTYPE mapper
+   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="MarcaMap">
+	<cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>
+	<cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
+
+  <!-- Result maps describe the mapping between the columns returned
+      from a query, and the class properties.  A result map isnt
+      necessary if the columns (or aliases) match to the properties
+       exactly. -->
+  <resultMap id="MarcaResult" type="Marca">
+    <result property="id" column="id"/>
+    <result property="marca" column="marca"/>
+    <result property="fabricante" column="fabricante"/>
+
+<result property="emprId" column="emprId"/>
+<result property="processId" column="processId"/>
+<result property="createUser" column="create_user"/>
+<result property="createDateUTC" column="create_date"/>
+<result property="modifyUser" column="modify_user"/>
+<result property="modifyDateUTC" column="modify_date"/>
+<collection property="emailList" column="id" select="DocumentoMap.fetchDocumentoByEmpresa"/>
+<collection property="enderecoList" column="id" select="DocumentoMap.fetchDocumentoByEmpresa"/>
+<collection property="telefoneList" column="id" select="DocumentoMap.fetchDocumentoByEmpresa"/>
+  </resultMap>
+
+  <sql id="allMarcaColumns">
+marca
+,fabricante
+,emprId
+,processId
+,create_date
+,create_user
+,modify_date
+,modify_user
+
+</sql>
+<sql id="allMarcaValues">
+#{marca},
+#{fabricante},
+		#{emprId},
+		#{processId},
+		#{createDateUTC},
+		#{createUser},
+		#{modifyDateUTC},
+		#{modifyUser}
+  </sql>
+
+
+ <select id="fetchAllMarcas" resultMap="MarcaResult">
+    SELECT id,
+	<include refid="allMarcaColumns" />
+   FROM marca ORDER BY id ASC
+ </select>
+
+ <select id="fetchMarcaById" parameterType="Integer" resultMap="MarcaResult">
+    SELECT id,
+	<include refid="allMarcaColumns" />
+   FROM marca WHERE id = #{fetchid}
+ </select>
+
+ <select id="fetchAllMarcasRequest" parameterType="MarcaInquiryRequest" resultMap="MarcaResult">
+
+		SELECT id,<include refid="allMarcaColumns" />
+  		  FROM marca where 0 = 0 <if test="criteria.emprId != null"> and emprId = criteria.emprId</if> ORDER BY id ASC
+		  OFFSET ( #{startPage} * #{pageSize} )
+		  LIMIT #{pageSize}
+</select>
+
+<select id="fetchMarcaRowCount" resultType="Integer">
+		SELECT COUNT(*) AS RECORD_COUNT FROM marca WHERE id IS NOT NULL <if test="criteria.emprId != null"> and emprId = criteria.emprId</if>
+
+ </select>
+
+ <insert id="insertMarca" parameterType="Marca" useGeneratedKeys="true" keyProperty="id">
+ 	INSERT INTO marca (
+	<if test="id != null"><if test="id > 0">id,</if></if><include refid="allMarcaColumns" />
+     )
+   VALUES (<if test="id != null"><if test="id > 0">#{id},</if></if><include refid="allMarcaValues" /> )
+ </insert>
+
+ <update id="updateMarca" parameterType="Marca">
+   UPDATE marca SET
+<if test="marca!= null">marca = #{marca},</if>
+<if test="fabricante!= null">fabricante = #{fabricante},</if>
+<if test="modifyDateUTC!= null"> modify_date=#{modifyDateUTC},</if>
+<if test="modifyUser!= null"> modify_user=#{modifyUser}</if>
+   WHERE
+    id = #{id}
+ </update>
+
+<delete id="deleteMarcaById" parameterType="Marca">
+  DELETE FROM marca WHERE id = #{id}
+ </delete>
+
+ <delete id="deleteAllMarcas">
+	DELETE FROM marca
+  </delete>
+</mapper>
+
+

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="DocumentoMap">
+	<cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>
+	<cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
+
+  <!-- Result maps describe the mapping between the columns returned
+      from a query, and the class properties.  A result map isnt
+      necessary if the columns (or aliases) match to the properties
+       exactly. -->
+  <resultMap id="DocumentoResult" type="Documento">
+    <result property="id" column="id"/>
+    <result property="tabelaEnumValue" column="tabelaEnumValue"/>
+    <result property="parentId" column="parentId"/>
+    <result property="processId" column="processId"/>
+    <result property="documentoTypeEnumValue" column="documentoTypeEnumValue"/>
+    <result property="numero" column="numero"/>
+    <result property="data" column="data"/>
+<result property="createUser" column="create_user"/>
+<result property="createDateUTC" column="create_date"/>
+<result property="modifyUser" column="modify_user"/>
+<result property="modifyDateUTC" column="modify_date"/>
+  </resultMap>
+
+  <sql id="allDocumentoColumns">
+
+id
+,tabelaEnumValue
+,parentId
+,processId
+,documentoTypeEnumValue
+,numero
+,data
+,create_date
+,create_user
+,modify_date
+,modify_user
+
+</sql>
+<sql id="allDocumentoValues">
+#{id},
+#{tabelaEnumValue},
+#{parentId},
+#{processId},
+#{documentoTypeEnumValue},
+#{numero},
+#{data},
+#{createDateUTC},
+#{createUser},
+#{modifyDateUTC},
+#{modifyUser}
+  </sql>
+
+ <sql id="allDocumentoColumnsWithQualifier">
+		c.id, c.documento_desc
+c.id,
+c.tabelaEnumValue,
+c.parentId,
+c.processId,
+c.documentoTypeEnumValue,
+c.numero,
+c.data,
+		c.createDateUTC,
+		c.createUser,
+		c.modifyDateUTC,
+		c.modifyUser
+ </sql>
+
+ <select id="fetchAllDocumentos" resultMap="DocumentoResult">
+    SELECT
+	<include refid="allDocumentoColumns" />
+   FROM documento ORDER BY id ASC
+ </select>
+
+ <select id="fetchDocumentoById" parameterType="Integer" resultMap="DocumentoResult">
+    SELECT
+	<include refid="allDocumentoColumns" />
+   FROM documento WHERE id = #{fetchid}
+ </select>
+
+ <select id="fetchAllDocumentosRequest" parameterType="PagedInquiryRequest" resultMap="DocumentoResult">
+
+
+
+		SELECT <include refid="allDocumentoColumns" />
+  		  FROM documento ORDER BY id ASC
+		  OFFSET ( #{startPage} * #{pageSize} )
+		  LIMIT #{pageSize}
+
+</select>
+
+<select id="fetchDocumentoRowCount" resultType="Integer">
+
+		SELECT COUNT(*) AS RECORD_COUNT FROM documento WHERE id IS NOT NULL
+ </select>
+
+ <insert id="insertDocumento" parameterType="Documento">
+ 	INSERT INTO documento (
+	<include refid="allDocumentoColumns" />
+     )
+   VALUES (<include refid="allDocumentoValues" /> )
+ </insert>
+
+ <update id="updateDocumento" parameterType="Documento">
+   UPDATE documento SET
+<if test="tabelaEnumValue!= null">tabelaEnumValue = #{tabelaEnumValue},</if>
+<if test="parentId!= null">parentId = #{parentId},</if>
+<if test="processId!= null">processId = #{processId},</if>
+<if test="documentoTypeEnumValue!= null">documentoTypeEnumValue = #{documentoTypeEnumValue},</if>
+<if test="numero!= null">numero = #{numero},</if>
+<if test="data!= null">data = #{data},</if>
+<if test="modifyDateUTC!= null"> modify_date=#{modifyDateUTC},</if>
+<if test="modifyUser!= null"> modify_user=#{modifyUser}</if>
+   WHERE
+    id = #{id}
+ </update>
+
+<delete id="deleteDocumentoById" parameterType="Documento">
+  DELETE FROM documento WHERE id = #{id}
+ </delete>
+
+ <delete id="deleteAllDocumentos">
+	DELETE FROM documento
+  </delete>
+</mapper>
+
+

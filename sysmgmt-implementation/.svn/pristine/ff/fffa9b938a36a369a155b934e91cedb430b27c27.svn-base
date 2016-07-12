@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+
+<!-- create by system gera-java version 1.0.0 01/05/2016 19:22 : 3-->
+
+<!DOCTYPE mapper
+   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="CondominioMap">
+	<cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>
+	<cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
+
+  <resultMap id="CondominioResult" type="Condominio" extends="EntidadeMap.EntidadeResult">
+	<!--<collection property="depositoList" column="emprId" select="DepositoMap.fetchAllDepositoByEntidade"/>-->
+  </resultMap>
+
+  <sql id="allCondominioColumns">
+	<include refid="EntidadeMap.allEntidadeColumns"/>
+  </sql>
+
+	<sql id="allCondominioValues">
+		<include refid="EntidadeMap.allEntidadeValues"/>
+	</sql>
+
+ <select id="fetchAllCondominios" resultMap="CondominioResult">
+    SELECT
+	<include refid="allCondominioColumns" />
+   FROM entidade where entidadeEnumValue = 5 ORDER BY id ASC
+ </select>
+
+ <select id="fetchCondominioById" parameterType="Integer" resultMap="CondominioResult">
+    SELECT
+	<include refid="allCondominioColumns" />
+   FROM entidade WHERE id = #{fetchid}
+ </select>
+
+ <select id="fetchAllCondominiosRequest" parameterType="CondominioInquiryRequest" resultMap="CondominioResult">
+
+		SELECT <include refid="allCondominioColumns" />
+  		  FROM entidade where entidadeEnumValue = 5 ORDER BY id ASC
+		  OFFSET ( #{startPage} * #{pageSize} )
+		  LIMIT #{pageSize}
+</select>
+
+<select id="fetchCondominioRowCount" resultType="Integer">
+		SELECT COUNT(*) AS RECORD_COUNT FROM entidade WHERE id IS NOT NULL and entidadeEnumValue = 5
+
+ </select>
+
+</mapper>
+
+

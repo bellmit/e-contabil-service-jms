@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+
+<!-- create by system gera-java version 1.0.0 13/05/2016 17:59 : 56-->
+
+<!DOCTYPE mapper
+   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="EstoqueMap">
+	<cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>
+	<cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
+
+  <!-- Result maps describe the mapping between the columns returned
+      from a query, and the class properties.  A result map isnt
+      necessary if the columns (or aliases) match to the properties
+       exactly. -->
+  <resultMap id="EstoqueResult" type="Estoque">
+    <result property="id" column="id"/>
+    <result property="parentId" column="parentId"/>
+    <result property="estoqueTypeEnumValue" column="estoqueTypeEnum"/>
+    <result property="ultimoMov" column="ultimoMov"/>
+    <result property="quant" column="quant"/>
+<result property="emprId" column="emprId"/>
+<result property="processId" column="processId"/>
+<result property="createUser" column="create_user"/>
+<result property="createDateUTC" column="create_date"/>
+<result property="modifyUser" column="modify_user"/>
+<result property="modifyDateUTC" column="modify_date"/>
+  </resultMap>
+
+  <sql id="allEstoqueColumns">
+parentId
+,estoqueTypeEnum
+,ultimoMov
+,quant
+,emprId
+,processId
+,create_date
+,create_user
+,modify_date
+,modify_user
+
+</sql>
+<sql id="allEstoqueValues">
+#{parentId},
+#{estoqueTypeEnumValue},
+#{ultimoMov},
+#{quant},
+		#{emprId},
+		#{processId},
+		#{createDateUTC},
+		#{createUser},
+		#{modifyDateUTC},
+		#{modifyUser}
+  </sql>
+
+
+ <select id="fetchAllEstoques" resultMap="EstoqueResult">
+    SELECT id,
+	<include refid="allEstoqueColumns" />
+   FROM estoque ORDER BY id ASC
+ </select>
+
+ <select id="fetchEstoqueById" parameterType="Integer" resultMap="EstoqueResult">
+    SELECT id,
+	<include refid="allEstoqueColumns" />
+   FROM estoque WHERE id = #{fetchid}
+ </select>
+
+ <select id="fetchAllEstoquesRequest" parameterType="PagedInquiryRequest" resultMap="EstoqueResult">
+
+		SELECT id,<include refid="allEstoqueColumns" />
+  		  FROM estoque where 0 = 0 <if test="emprId != null"> and emprId = emprId</if> ORDER BY id ASC
+		  OFFSET ( #{startPage} * #{pageSize} )
+		  LIMIT #{pageSize}
+</select>
+
+<select id="fetchEstoqueRowCount" resultType="Integer">
+		SELECT COUNT(*) AS RECORD_COUNT FROM estoque WHERE id IS NOT NULL <if test="emprId != null"> and emprId = emprId</if>
+
+ </select>
+
+ <insert id="insertEstoque" parameterType="Estoque" useGeneratedKeys="true" keyProperty="id">
+ 	INSERT INTO estoque (
+	<if test="id != null"><if test="id > 0">id,</if></if><include refid="allEstoqueColumns" />
+     )
+   VALUES (<if test="id != null"><if test="id > 0">#{id},</if></if><include refid="allEstoqueValues" /> )
+ </insert>
+
+ <update id="updateEstoque" parameterType="Estoque">
+   UPDATE estoque SET
+<if test="parentId!= null">parentId = #{parentId},</if>
+<if test="estoqueTypeEnumValue!= null">estoqueTypeEnum = #{estoqueTypeEnumValue},</if>
+<if test="ultimoMov!= null">ultimoMov = #{ultimoMov},</if>
+<if test="quant!= null">quant = #{quant},</if>
+<if test="modifyDateUTC!= null"> modify_date=#{modifyDateUTC},</if>
+<if test="modifyUser!= null"> modify_user=#{modifyUser}</if>
+   WHERE
+    id = #{id}
+ </update>
+
+<delete id="deleteEstoqueById" parameterType="Estoque">
+  DELETE FROM estoque WHERE id = #{id}
+ </delete>
+
+ <delete id="deleteAllEstoques">
+	DELETE FROM estoque
+  </delete>
+</mapper>
+
+

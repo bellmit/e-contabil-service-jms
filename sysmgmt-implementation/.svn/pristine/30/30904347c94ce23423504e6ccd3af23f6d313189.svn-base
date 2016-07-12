@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+
+<!-- create by system gera-java version 1.0.0 10/05/2016 15:25 : 22-->
+
+<!DOCTYPE mapper
+   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ClassificacaoMap">
+	<cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>
+	<cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
+
+  <!-- Result maps describe the mapping between the columns returned
+      from a query, and the class properties.  A result map isnt
+      necessary if the columns (or aliases) match to the properties
+       exactly. -->
+  <resultMap id="ClassificacaoResult" type="Classificacao">
+    <result property="id" column="id"/>
+    <result property="descricao" column="descricao"/>
+    <result property="codigo" column="codigo"/>
+<result property="emprId" column="emprId"/>
+<result property="processId" column="processId"/>
+<result property="createUser" column="create_user"/>
+<result property="createDateUTC" column="create_date"/>
+<result property="modifyUser" column="modify_user"/>
+<result property="modifyDateUTC" column="modify_date"/>
+  </resultMap>
+
+  <sql id="allClassificacaoColumns">
+descricao
+,codigo
+,emprId
+,processId
+,create_date
+,create_user
+,modify_date
+,modify_user
+
+</sql>
+<sql id="allClassificacaoValues">
+#{descricao},
+#{codigo},
+		#{emprId},
+		#{processId},
+		#{createDateUTC},
+		#{createUser},
+		#{modifyDateUTC},
+		#{modifyUser}
+  </sql>
+
+
+ <select id="fetchAllClassificacaos" resultMap="ClassificacaoResult">
+    SELECT id,
+	<include refid="allClassificacaoColumns" />
+   FROM classificacao ORDER BY id ASC
+ </select>
+
+ <select id="fetchClassificacaoById" parameterType="Integer" resultMap="ClassificacaoResult">
+    SELECT id,
+	<include refid="allClassificacaoColumns" />
+   FROM classificacao WHERE id = #{fetchid}
+ </select>
+
+ <select id="fetchAllClassificacaosRequest" parameterType="ClassificacaoInquiryRequest" resultMap="ClassificacaoResult">
+
+		SELECT id,<include refid="allClassificacaoColumns" />
+  		  FROM classificacao where 0 = 0 <if test="criteria.emprId != null"> and emprId = criteria.emprId</if> ORDER BY id ASC
+		  OFFSET ( #{startPage} * #{pageSize} )
+		  LIMIT #{pageSize}
+</select>
+
+<select id="fetchClassificacaoRowCount" resultType="Integer">
+		SELECT COUNT(*) AS RECORD_COUNT FROM classificacao WHERE id IS NOT NULL <if test="criteria.emprId != null"> and emprId = criteria.emprId</if>
+
+ </select>
+
+ <insert id="insertClassificacao" parameterType="Classificacao" useGeneratedKeys="true" keyProperty="id">
+ 	INSERT INTO classificacao (
+	<if test="id != null"><if test="id > 0">id,</if></if><include refid="allClassificacaoColumns" />
+     )
+   VALUES (<if test="id != null"><if test="id > 0">#{id},</if></if><include refid="allClassificacaoValues" /> )
+ </insert>
+
+ <update id="updateClassificacao" parameterType="Classificacao">
+   UPDATE classificacao SET
+<if test="descricao!= null">descricao = #{descricao},</if>
+<if test="codigo!= null">codigo = #{codigo},</if>
+<if test="modifyDateUTC!= null"> modify_date=#{modifyDateUTC},</if>
+<if test="modifyUser!= null"> modify_user=#{modifyUser}</if>
+   WHERE
+    id = #{id}
+ </update>
+
+<delete id="deleteClassificacaoById" parameterType="Classificacao">
+  DELETE FROM classificacao WHERE id = #{id}
+ </delete>
+
+ <delete id="deleteAllClassificacaos">
+	DELETE FROM classificacao
+  </delete>
+</mapper>
+
+

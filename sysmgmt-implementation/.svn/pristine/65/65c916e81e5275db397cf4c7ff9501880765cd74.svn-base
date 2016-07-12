@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+
+<!-- create by system gera-java version 1.0.0 03/05/2016 14:9 : 7-->
+
+<!DOCTYPE mapper
+   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="SindicoMap">
+	<cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>
+	<cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
+
+  <!-- Result maps describe the mapping between the columns returned
+      from a query, and the class properties.  A result map isnt
+      necessary if the columns (or aliases) match to the properties
+       exactly. -->
+<resultMap id="sindicoResult" type="Sindico" extends="PessoaMap.PessoaResult">
+  </resultMap>
+
+<sql id="allSindicoColumns">
+	<include refid="PessoaMap.allPessoaColumns"/>
+</sql>
+<sql id="allSindicoValues">
+	<include refid="PessoaMap.allPessoaValues"/>
+</sql>
+
+ <select id="fetchAllSindicos" resultMap="sindicoResult">
+    SELECT
+	<include refid="allSindicoColumns" />
+   FROM pessoa where pessoaTypeEnum = 8 ORDER BY id ASC
+ </select>
+
+ <select id="fetchSindicoById" parameterType="Integer" resultMap="sindicoResult">
+    SELECT
+	<include refid="allSindicoColumns" />
+   FROM pessoa WHERE id = #{fetchid}
+ </select>
+
+ <select id="fetchAllSindicosRequest" parameterType="SindicoInquiryRequest" resultMap="sindicoResult">
+
+		SELECT <include refid="allSindicoColumns" />
+  		  FROM pessoa where pessoaTypeEnum = 8 ORDER BY id ASC
+		  OFFSET ( #{startPage} * #{pageSize} )
+		  LIMIT #{pageSize}
+</select>
+
+<select id="fetchSindicoRowCount" resultType="Integer">
+		SELECT COUNT(*) AS RECORD_COUNT FROM pessoa WHERE id IS NOT NULL and pessoaTypeEnum = 8
+
+ </select>
+</mapper>
+
+
